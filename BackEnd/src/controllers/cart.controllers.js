@@ -41,11 +41,8 @@ export const addToCart = async (req, res) => {
     });
   }
 };
-
-// Get cart (placeholder - returns empty for now)
 export const getCart = async (req, res) => {
   try {
-    // Without user system, cart would be managed on frontend
     res.json({
       success: true,
       data: { items: [] },
@@ -59,8 +56,6 @@ export const getCart = async (req, res) => {
     });
   }
 };
-
-// Update cart item (placeholder)
 export const updateCartItem = async (req, res) => {
   try {
     const { productId } = req.params;

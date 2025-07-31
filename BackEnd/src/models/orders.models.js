@@ -165,7 +165,7 @@ orderSchema.index({ orderNumber: 1 });
 orderSchema.index({ status: 1 });
 orderSchema.index({ paymentStatus: 1 });
 
-export const Orders = new mongoose.Model("Orders", orderSchema);
+export const Order = new mongoose.Model("Order", orderSchema);
 
 export const cartSchema = new mongoose.Schema(
   {
