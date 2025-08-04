@@ -1,32 +1,37 @@
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
-import Home from "./Pages/Home";
-import Contact from "./Pages/Contact";
-import Cart from "./Pages/Cart";
-import ProductDetails from "./Pages/ProductDetails";
-import Login from "./Pages/Login";
-import Signup from "./Pages/Signup";
-import Orders from "./Pages/Orders";
 import { AuthProvider } from "./context/AuthContext";
 import "./App.css";
 import { lazy, Suspense } from "react";
-
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import { PageLoadingSpinner } from "./components/Loading/LoadingSpinner";
+import ErrorBoundary from "./components/ErrorBoundary/ErrorBoundary";
+
+// Lazy load all page components for better performance
+const Home = lazy(() => import("./Pages/Home"));
+const Contact = lazy(() => import("./Pages/Contact"));
+const Cart = lazy(() => import("./Pages/Cart"));
+const ProductDetails = lazy(() => import("./Pages/ProductDetails"));
+const Login = lazy(() => import("./Pages/Login"));
+const Signup = lazy(() => import("./Pages/Signup"));
+const Orders = lazy(() => import("./Pages/Orders"));
+const Products = lazy(() => import("./Pages/Products"));
 
 const Layout = () => {
   return (
     <AuthProvider>
-      <div className="app">
-        <Header />
-        <Outlet />
-        <Footer />
-      </div>
+      <ErrorBoundary>
+        <div className="app">
+          <Header />
+          <Outlet />
+          <Footer />
+        </div>
+      </ErrorBoundary>
     </AuthProvider>
   );
 };
 
 //TODO:Well i still need to add use navigation so i can go to the page giving product info 🎃
-const Products = lazy(() => import("./Pages/Products"));
 const router = createBrowserRouter([
   {
     path: "/",
@@ -34,39 +39,67 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Home />,
+        element: (
+          <Suspense fallback={<PageLoadingSpinner message="Loading home page..." />}>
+            <Home />
+          </Suspense>
+        ),
       },
       {
         path: "/products",
         element: (
-          <Suspense fallback={<div>Loading🎃🎡</div>}>
+          <Suspense fallback={<PageLoadingSpinner message="Loading products..." />}>
             <Products />
           </Suspense>
         ),
       },
       {
         path: "/products/:id",
-        element: <ProductDetails />,
+        element: (
+          <Suspense fallback={<PageLoadingSpinner message="Loading product details..." />}>
+            <ProductDetails />
+          </Suspense>
+        ),
       },
       {
         path: "/contact",
-        element: <Contact />,
+        element: (
+          <Suspense fallback={<PageLoadingSpinner message="Loading contact page..." />}>
+            <Contact />
+          </Suspense>
+        ),
       },
       {
         path: "/cart",
-        element: <Cart />,
+        element: (
+          <Suspense fallback={<PageLoadingSpinner message="Loading your cart..." />}>
+            <Cart />
+          </Suspense>
+        ),
       },
       {
         path: "/login",
-        element: <Login />,
+        element: (
+          <Suspense fallback={<PageLoadingSpinner message="Loading login..." />}>
+            <Login />
+          </Suspense>
+        ),
       },
       {
         path: "/signup",
-        element: <Signup />,
+        element: (
+          <Suspense fallback={<PageLoadingSpinner message="Loading signup..." />}>
+            <Signup />
+          </Suspense>
+        ),
       },
       {
         path: "/orders",
-        element: <Orders />,
+        element: (
+          <Suspense fallback={<PageLoadingSpinner message="Loading your orders..." />}>
+            <Orders />
+          </Suspense>
+        ),
       },
     ],
   },

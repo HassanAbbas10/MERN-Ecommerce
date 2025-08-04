@@ -1,17 +1,16 @@
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useAuth } from "../../context/AuthContext";
-import orange from "@mui/material/colors/orange";
-import ShoppingCartTwoToneIcon from "@mui/icons-material/ShoppingCartTwoTone";
-import PersonIcon from "@mui/icons-material/Person";
-import LogoutIcon from "@mui/icons-material/Logout";
+import { ShoppingBag, User, LogOut, Menu, X } from "lucide-react";
 import Search from "../Search/Search";
 import HeaderSec from "./HeaderSec";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 const Header = () => {
   const cart = useSelector((state) => state.cart.cart);
   const { isAuthenticated, user, logout } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -21,82 +20,213 @@ const Header = () => {
     }
   };
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   return (
     <>
-    <nav className="top-0 p-3 py-4 z-10 bg-white rounded-b-md border-b border-solid border-slate-300 sticky backdrop-filter backdrop-blur-lg bg-opacity-30">
-      <div className="container mx-auto relative">
-        <div className="flex flex-wrap items-center justify-between px-4">
-          <div className="flex items-center justify-center w-full lg:w-auto z-10">
-            <p className="text-orange-300 text-3xl">
-              Dev <span className="text-red-500 italic">Shop</span>
-            </p>
+    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 lg:h-20">
+          {/* Logo */}
+          <div className="flex items-center">
+            <Link to="/" className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <ShoppingBag className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                DevShop
+              </span>
+            </Link>
           </div>
 
-          <div className="w-full lg:w-auto my-2 lg:my-0 flex justify-center lg:justify-start z-10">
+          {/* Desktop Search */}
+          <div className="hidden lg:flex flex-1 max-w-lg mx-8">
             <Search />
           </div>
 
-          <ul className="flex w-full lg:w-auto justify-center lg:justify-end items-center list-none gap-4 lg:gap-10 text-white mt-4 lg:mt-0">
-            <li className="active:text-orange-400">
-              <Link to="/" className="text-orange-500 italic">
-                Home
-              </Link>
-            </li>
-            <li >
-              <Link to="/products" className="text-orange-500 italic">
-                Shop
-              </Link>
-            </li>
-            <li className="">
-              <Link to="/contact" className="text-orange-500 italic">
-                Contact
-              </Link>
-            </li>
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center space-x-8">
+            <Link 
+              to="/" 
+              className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 relative group"
+            >
+              Home
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+            </Link>
+            <Link 
+              to="/products" 
+              className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 relative group"
+            >
+              Shop
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+            </Link>
+            <Link 
+              to="/contact" 
+              className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 relative group"
+            >
+              Contact
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+            </Link>
             {isAuthenticated && (
-              <li className="">
-                <Link to="/orders" className="text-orange-500 italic">
-                  My Orders
-                </Link>
-              </li>
+              <Link 
+                to="/orders" 
+                className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 relative group"
+              >
+                Orders
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+              </Link>
             )}
-            <li className="relative">
-              <Link to="/cart" className="text-orange-500 italic flex items-center">
-                <ShoppingCartTwoToneIcon sx={{ color: orange[700] }}/>
-                <span className="text-white bg-orange-500 absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 py-0.5 px-2 border-orange-400 rounded-full text-xs">
+            
+            {/* Cart */}
+            <Link to="/cart" className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors duration-200">
+              <ShoppingBag className="w-6 h-6" />
+              {cart.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                   {cart.length}
                 </span>
-              </Link>
-            </li>
+              )}
+            </Link>
             
-            {/* Authentication Section */}
+            {/* Authentication */}
             {isAuthenticated ? (
-              <li className="flex items-center gap-2">
-                <div className="flex items-center gap-2 text-orange-500">
-                  <PersonIcon />
-                  <span className="hidden md:inline text-sm">Hi, {user?.fullName}</span>
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                    <User className="w-4 h-4 text-gray-600" />
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">
+                    {user?.fullName?.split(' ')[0] || 'User'}
+                  </span>
                 </div>
                 <Button
                   onClick={handleLogout}
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  className="text-red-500 border-red-500 hover:bg-red-50"
+                  className="text-gray-600 hover:text-red-600 hover:bg-red-50"
                 >
-                  <LogoutIcon className="w-4 h-4 mr-1" />
-                  <span className="hidden md:inline">Logout</span>
+                  <LogOut className="w-4 h-4" />
                 </Button>
-              </li>
+              </div>
             ) : (
-              <li className="flex gap-2">
-                <Button asChild variant="outline" size="sm" className="text-orange-500 border-orange-500">
-                  <Link to="/login">Login</Link>
+              <div className="flex items-center space-x-3">
+                <Button asChild variant="ghost" size="sm" className="text-gray-700 hover:text-blue-600">
+                  <Link to="/login">Sign In</Link>
                 </Button>
-                <Button asChild size="sm" className="bg-orange-500 hover:bg-orange-600">
+                <Button asChild size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
                   <Link to="/signup">Sign Up</Link>
                 </Button>
-              </li>
+              </div>
             )}
-          </ul>
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="lg:hidden flex items-center space-x-4">
+            <Link to="/cart" className="relative p-2 text-gray-700">
+              <ShoppingBag className="w-6 h-6" />
+              {cart.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {cart.length}
+                </span>
+              )}
+            </Link>
+            <button
+              onClick={toggleMobileMenu}
+              className="p-2 text-gray-700 hover:text-blue-600"
+            >
+              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Search */}
+        <div className="lg:hidden py-3 border-t border-gray-100">
+          <Search />
+        </div>
+
+        {/* Mobile Navigation */}
+        {isMobileMenuOpen && (
+          <div className="lg:hidden border-t border-gray-100 py-4 space-y-3">
+            <Link 
+              to="/" 
+              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md font-medium"
+              onClick={toggleMobileMenu}
+            >
+              Home
+            </Link>
+            <Link 
+              to="/products" 
+              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md font-medium"
+              onClick={toggleMobileMenu}
+            >
+              Shop
+            </Link>
+            <Link 
+              to="/contact" 
+              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md font-medium"
+              onClick={toggleMobileMenu}
+            >
+              Contact
+            </Link>
+            {isAuthenticated && (
+              <Link 
+                to="/orders" 
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md font-medium"
+                onClick={toggleMobileMenu}
+              >
+                Orders
+              </Link>
+            )}
+            
+            <div className="pt-3 border-t border-gray-100">
+              {isAuthenticated ? (
+                <div className="space-y-3">
+                  <div className="flex items-center px-3 py-2">
+                    <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-3">
+                      <User className="w-4 h-4 text-gray-600" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">
+                      {user?.fullName || 'User'}
+                    </span>
+                  </div>
+                  <Button
+                    onClick={() => {
+                      handleLogout();
+                      toggleMobileMenu();
+                    }}
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign Out
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Button 
+                    asChild 
+                    variant="ghost" 
+                    size="sm" 
+                    className="w-full justify-start"
+                    onClick={toggleMobileMenu}
+                  >
+                    <Link to="/login">Sign In</Link>
+                  </Button>
+                  <Button 
+                    asChild 
+                    size="sm" 
+                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    onClick={toggleMobileMenu}
+                  >
+                    <Link to="/signup">Sign Up</Link>
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
      
     </nav>

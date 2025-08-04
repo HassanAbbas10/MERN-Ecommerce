@@ -1,10 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { remFromCart, clearCart } from "@/Redux/cartSlice";
 import { orderAPI } from "../services/api/apiService";
 import { useAuth } from "../context/AuthContext";
-import LottieAnimation from "@/components/Lotte/LotteAnimation";
+import { ComponentLoadingSpinner } from "@/components/Loading/LoadingSpinner";
+
+// Lazy load animation component
+const LottieAnimation = lazy(() => import("@/components/Lotte/LotteAnimation"));
 
 const Cart = () => {
   const dispatch = useDispatch();

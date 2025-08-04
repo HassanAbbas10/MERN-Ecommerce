@@ -1,23 +1,42 @@
-import CarouselImg from "@/components/Carousel/CarouselImg";
+import { lazy, Suspense } from "react";
+import { ComponentLoadingSpinner } from "@/components/Loading/LoadingSpinner";
 
-import HomeDecorC from "@/components/Categ/HomeDecorC";
-import Category from "@/components/Categories/Category";
-import HighLights  from "@/components/FeatureHighlights/HighLights";
-import Newsletter from "@/components/NewsLetter/NewsLetter";
+// Lazy load home components for better performance
+const CarouselImg = lazy(() => import("@/components/Carousel/CarouselImg"));
+const HomeDecorC = lazy(() => import("@/components/Categ/HomeDecorC"));
+const Category = lazy(() => import("@/components/Categories/Category"));
+const HighLights = lazy(() => import("@/components/FeatureHighlights/HighLights"));
+const Newsletter = lazy(() => import("@/components/NewsLetter/NewsLetter"));
+
 const Home = () => {
   return (
     <div>
-      <CarouselImg />
+      <Suspense fallback={<ComponentLoadingSpinner message="Loading carousel..." />}>
+        <CarouselImg />
+      </Suspense>
+      
       <div className="max-width-full h-28 bg-indigo-100 flex justify-center items-center mt-5">
         <h1 className="text-3xl text-black px-4">Category section </h1>
       </div>
-      <Category/>
-      <HomeDecorC Title={"Perfumes"} Category={"fragrances"}/>
-      <HomeDecorC Title={"Laptops"} Category={"laptops"}/>
-      <HomeDecorC Title={"Home Decoration"} Category={"home-decoration"}/>
-      <HomeDecorC Title={"Groceries"} Category={"groceries"}/>
-      <HighLights/>
-      <Newsletter/>
+      
+      <Suspense fallback={<ComponentLoadingSpinner message="Loading categories..." />}>
+        <Category />
+      </Suspense>
+      
+      <Suspense fallback={<ComponentLoadingSpinner message="Loading products..." />}>
+        <HomeDecorC Title={"Perfumes"} Category={"fragrances"} />
+        <HomeDecorC Title={"Laptops"} Category={"laptops"} />
+        <HomeDecorC Title={"Home Decoration"} Category={"home-decoration"} />
+        <HomeDecorC Title={"Groceries"} Category={"groceries"} />
+      </Suspense>
+      
+      <Suspense fallback={<ComponentLoadingSpinner message="Loading highlights..." />}>
+        <HighLights />
+      </Suspense>
+      
+      <Suspense fallback={<ComponentLoadingSpinner message="Loading newsletter..." />}>
+        <Newsletter />
+      </Suspense>
     </div>
   );
 };
