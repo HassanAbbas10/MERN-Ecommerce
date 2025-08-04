@@ -4,7 +4,7 @@ import {
   getOrderStats,
   updatePaymentStatus,
   updateOrderStatus,
-} from "../controllers/adminOrder.controllers";
+} from "../controllers/adminOrder.controllers.js";
 
 const router = Router();
 

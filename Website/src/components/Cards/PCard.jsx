@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
 import LottieAnimationSec from "../Lotte/LotteAnimationSec";
-import { axiosInstance } from "@/services/api/api";
+import { productAPI } from "@/services/api/apiService";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { AddShoppingCart } from "@mui/icons-material";
@@ -12,9 +11,9 @@ const PCard = () => {
 
   const fetchProducts = useCallback(async () => {
     try {
-      const res = await axiosInstance.get("/products/");
-      setProducts(res.data.data);
-      console.log(res.data.data);
+      const res = await productAPI.getAllProducts();
+      setProducts(res.data);
+      console.log(res.data);
     } catch (error) {
       console.log("Error while fetching the product", error.message);
     }

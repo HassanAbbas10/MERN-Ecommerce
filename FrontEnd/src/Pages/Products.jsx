@@ -22,7 +22,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Plus, Search, Edit, Trash2} from "lucide-react";
 import { useEffect } from "react";
-import { axiosInstance } from "@/services/api/api";
+import { productAPI } from "@/services/api/apiService";
 import { useLocation } from "react-router-dom";
 
 export default function Products() {
@@ -32,9 +32,9 @@ export default function Products() {
 
 const fetchProducts = useCallback(async () => {
   try {
-    const res = await axiosInstance.get("/products/");
-    setProducts(res.data.data);
-    console.log(res.data.data);
+    const res = await productAPI.getAllProducts();
+    setProducts(res.data);
+    console.log(res.data);
   } catch (error) {
     console.log(error.message, "Failed while fetching the products");
   }
@@ -48,7 +48,7 @@ const deleteProduct = useCallback(
   async (id) => {
     if (confirm("Are you sure that you want to delete this product?")) {
       try {
-        await axiosInstance.delete(`/products/${id}`);
+        await productAPI.deleteProduct(id);
         console.log("Product has been successfully deleted");
         fetchProducts();
       } catch (error) {

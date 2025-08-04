@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowLeft, Upload, X, Save, Star } from "lucide-react"
-import { axiosInstance } from "@/services/api/api"
+import { productAPI } from "@/services/api/apiService"
 import { useNavigate } from "react-router-dom"
 
 export default function AddProduct() {
@@ -123,22 +123,17 @@ if (imageFiles.length > 5) {
     setIsLoading(true)
 
     try {
-      const formData = new FormData()
-        imageFiles.forEach((file) => {
-      formData.append('images', file);
-    });
-      formData.append('name', product.name.trim())
-      formData.append('description', product.description.trim())
-      formData.append('price', product.price)
-      formData.append('category', product.category)
-      formData.append('quantity', product.quantity)
-      formData.append('rating', product.rating)
-
-   const response = await axiosInstance.post('/products/add-product', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
+      const productData = {
+        name: product.name.trim(),
+        description: product.description.trim(),
+        price: product.price,
+        category: product.category,
+        quantity: product.quantity,
+        rating: product.rating,
+        images: imageFiles
       }
-    });
+
+      const response = await productAPI.addProduct(productData)
 
       console.log('Product created successfully:', response.data)
       alert('Product created successfully!')

@@ -1,5 +1,5 @@
-import { Product,Cart } from "../models/products.models.js";
-import { Order } from "../models/orders.models";
+import { Product } from "../models/products.models.js";
+import { Order } from "../models/orders.models.js";
 
 export const getAdminOrders = async (req, res) => {
   try {
@@ -17,6 +17,7 @@ export const getAdminOrders = async (req, res) => {
 
     const orders = await Order.find(query)
       .populate('items.product', 'name images category')
+      .populate('userId', 'fullName email username')
       .sort({ createdAt: -1 })
       .limit(limit * 1)
       .skip((page - 1) * limit);

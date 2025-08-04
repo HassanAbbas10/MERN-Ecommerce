@@ -40,6 +40,12 @@ export const orderSchema = new mongoose.Schema(
       uppercase: true,
     },
 
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
     items: [orderItemSchema],
 
     subTotal: {
@@ -65,8 +71,8 @@ export const orderSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "shipped", "delivered", "cancelled"],
-      default: true,
+      enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
+      default: "pending",
       lowercase: true,
     },
 
@@ -145,7 +151,7 @@ export const orderSchema = new mongoose.Schema(
 
 
 orderSchema.virtual("totalItems").get(function(){
-    return this.items.reduce((total,itemAmount)=>total + itemAmount,0)
+    return this.items.reduce((total, item) => total + item.quantity, 0)
 })
 
 orderSchema.virtual("orderAge").get(function () {
@@ -161,11 +167,10 @@ orderSchema.pre("save", async function (next) {
 });
 
 orderSchema.index({ createdAt: -1 });
-orderSchema.index({ orderNumber: 1 });
 orderSchema.index({ status: 1 });
 orderSchema.index({ paymentStatus: 1 });
 
-export const Order = new mongoose.Model("Order", orderSchema);
+export const Order = mongoose.model("Order", orderSchema);
 
 export const cartSchema = new mongoose.Schema(
   {
@@ -198,7 +203,5 @@ export const cartSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
-cartSchema.index({ sessionId: 1 });
 
 export const Cart = mongoose.model("Cart", cartSchema);

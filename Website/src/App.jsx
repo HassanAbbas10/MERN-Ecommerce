@@ -4,19 +4,24 @@ import Home from "./Pages/Home";
 import Contact from "./Pages/Contact";
 import Cart from "./Pages/Cart";
 import ProductDetails from "./Pages/ProductDetails";
+import Login from "./Pages/Login";
+import Signup from "./Pages/Signup";
+import Orders from "./Pages/Orders";
+import { AuthProvider } from "./context/AuthContext";
 import "./App.css";
-import { lazy,Suspense } from "react";
+import { lazy, Suspense } from "react";
 
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 
 const Layout = () => {
-  
   return (
-    <div className="app">
-      <Header />
-      <Outlet />
-      <Footer />
-    </div>
+    <AuthProvider>
+      <div className="app">
+        <Header />
+        <Outlet />
+        <Footer />
+      </div>
+    </AuthProvider>
   );
 };
 
@@ -50,6 +55,18 @@ const router = createBrowserRouter([
       {
         path: "/cart",
         element: <Cart />,
+      },
+      {
+        path: "/login",
+        element: <Login />,
+      },
+      {
+        path: "/signup",
+        element: <Signup />,
+      },
+      {
+        path: "/orders",
+        element: <Orders />,
       },
     ],
   },

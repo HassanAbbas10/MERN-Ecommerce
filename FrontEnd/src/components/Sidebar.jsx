@@ -1,24 +1,35 @@
 "use client"
 
 import { useState } from "react"
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { LayoutDashboard, Package, ShoppingCart, Users, BarChart3, Menu, X, Plus } from "lucide-react"
+import { LayoutDashboard, Package, ShoppingCart, Users, BarChart3, Menu, X, Plus, LogOut } from "lucide-react"
+import { useAuth } from "../context/AuthContext"
 
 const navigation = [
-  { name: "Dashboard", href: "/", icon: LayoutDashboard },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Products", href: "/products", icon: Package },
   { name: "Add Product", href: "/add-product", icon: Plus },
   { name: "Orders", href: "/orders", icon: ShoppingCart },
   { name: "Customers", href: "/customers", icon: Users },
   { name: "Analytics", href: "/analytics", icon: BarChart3 },
- 
 ]
 
 export function Sidebar() {
   const location = useLocation()
+  const navigate = useNavigate()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { user, logout } = useAuth()
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+      navigate("/login")
+    } catch (error) {
+      console.error("Logout error:", error)
+    }
+  }
 
   return (
     <>
@@ -70,15 +81,30 @@ export function Sidebar() {
 
           {/* User section */}
           <div className="p-4 border-t border-gray-200">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 mb-3">
               <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-medium">A</span>
+                <span className="text-white text-sm font-medium">
+                  {user?.fullName?.charAt(0)?.toUpperCase() || "A"}
+                </span>
               </div>
-              <div>
-                <p className="text-sm font-medium text-black">Admin User</p>
-                <p className="text-xs text-gray-500">admin@example.com</p>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-black">
+                  {user?.fullName || "Admin User"}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {user?.email || "admin@example.com"}
+                </p>
               </div>
             </div>
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              size="sm"
+              className="w-full text-red-600 border-red-600 hover:bg-red-50"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Logout
+            </Button>
           </div>
         </div>
       </div>

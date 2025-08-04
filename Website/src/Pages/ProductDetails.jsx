@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -297,7 +296,7 @@ const ProductDetail = () => {
                   {/* Action Buttons */}
                   <div className="space-y-3">
                     <div className="flex gap-3">
-                      {cartP.some((item) => item.id === product.id) ? (
+                      {cartP.some((item) => item._id === product._id) ? (
                         <button
                           onClick={handleRemFromCart}
                           className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-6 py-3 rounded-lg font-medium text-base transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center gap-2"

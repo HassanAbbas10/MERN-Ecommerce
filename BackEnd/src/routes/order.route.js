@@ -2,11 +2,10 @@ import { Router } from "express";
 import {
   createOrder,
   getAllOrders,
-  getAllOrders,
   getOrderByNumber,
   cancelOrder,
   getOrder,
-} from "../controllers/order.controllers";
+} from "../controllers/order.controllers.js";
 const router = Router();
 
 router.post("/", createOrder);

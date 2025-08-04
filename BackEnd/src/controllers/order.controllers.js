@@ -1,5 +1,5 @@
-import { Cart } from "../models/orders.models.js";
-import { Product, Order } from "../models/products.models.js";
+import { Cart, Order } from "../models/orders.models.js";
+import { Product } from "../models/products.models.js";
 import mongoose from "mongoose";
 
 export const createOrder = async (req, res) => {
@@ -16,6 +16,10 @@ export const createOrder = async (req, res) => {
       shippingCost = 0,
       discount = 0,
     } = req.body;
+
+    console.log("Received order data:", req.body);
+    console.log("Items:", items);
+    console.log("Shipping address:", shippingAddress);
 
     let subtotal = 0;
     const processedItems = [];
@@ -52,10 +56,14 @@ export const createOrder = async (req, res) => {
 
     const totalAmount = subtotal + tax + shippingCost - discount;
 
+    // Generate unique order number
+    const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+
     // Create order
     const order = new Order({
+      orderNumber,
       items: processedItems,
-      subtotal,
+      subTotal: subtotal, // Use subTotal (camelCase) to match the model
       tax,
       shippingCost,
       discount,
@@ -129,10 +137,9 @@ export const getOrder = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const order = await Order.findById(id).populate(
-      "items.product",
-      "name images category rating"
-    );
+    const order = await Order.findById(id)
+      .populate("items.product", "name images category rating")
+      .populate("userId", "fullName email username");
 
     if (!order) {
       return res.status(404).json({
