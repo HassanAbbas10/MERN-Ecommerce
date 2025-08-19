@@ -20,6 +20,7 @@ export default function AddProduct() {
     category: "",
     quantity: "",
     rating: "",
+    isCustomizable: false,
   })
 
   const navigate = useNavigate();
@@ -130,6 +131,7 @@ if (imageFiles.length > 5) {
         category: product.category,
         quantity: product.quantity,
         rating: product.rating,
+        isCustomizable: product.isCustomizable,
         images: imageFiles
       }
 
@@ -148,6 +150,7 @@ if (imageFiles.length > 5) {
         category: "",
         quantity: "",
         rating: "",
+        isCustomizable: false,
       })
       setimageFiles([])
       setImagePreview("")
@@ -360,6 +363,30 @@ if (imageFiles.length > 5) {
                     </SelectContent>
                   </Select>
                 </div>
+                
+                {/* Customizable Toggle - Only show for shirts */}
+                {product.category === "shirts" && (
+                  <div className="space-y-2">
+                    <Label className="text-black">Customizable Product</Label>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="isCustomizable"
+                        checked={product.isCustomizable}
+                        onChange={(e) => setProduct({ ...product, isCustomizable: e.target.checked })}
+                        className="rounded border-gray-300"
+                      />
+                      <Label htmlFor="isCustomizable" className="text-black text-sm">
+                        Allow customers to customize this shirt
+                      </Label>
+                    </div>
+                    {product.isCustomizable && (
+                      <p className="text-xs text-blue-600">
+                        ✨ This shirt will be available in the customization tool
+                      </p>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
 

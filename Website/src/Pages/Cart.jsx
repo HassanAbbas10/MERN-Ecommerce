@@ -205,20 +205,52 @@ const Cart = () => {
                       {cart.map((item, index) => (
                         <div key={`${item._id}-${index}`} className="p-6">
                           <div className="flex items-start space-x-4">
-                            <div className="flex-shrink-0">
+                            <div className="flex-shrink-0 relative">
                               <img
                                 src={item.images[0]}
                                 alt={item.name}
                                 className="w-24 h-24 rounded-lg object-cover border border-gray-200"
                               />
+                              {/* Custom logo overlay for custom products */}
+                              {item.isCustom && item.customization && (
+                                <div className="absolute inset-0 rounded-lg overflow-hidden">
+                                  <img
+                                    src={item.customization.customLogo}
+                                    alt="Custom logo"
+                                    className="absolute object-contain"
+                                    style={{
+                                      left: `${(item.customization.position.x / 400) * 100}%`,
+                                      top: `${(item.customization.position.y / 500) * 100}%`,
+                                      width: `${(item.customization.size.width / 400) * 100}%`,
+                                      height: `${(item.customization.size.height / 500) * 100}%`,
+                                      transform: 'translate(-50%, -50%)'
+                                    }}
+                                  />
+                                </div>
+                              )}
+                              {item.isCustom && (
+                                <span className="absolute -top-2 -right-2 bg-purple-500 text-white text-xs px-2 py-1 rounded-full">
+                                  Custom
+                                </span>
+                              )}
                             </div>
                             <div className="flex-1 min-w-0">
                               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                                 {item.name}
+                                {item.isCustom && item.customization?.customizationName && (
+                                  <span className="text-purple-600 text-sm ml-2">
+                                    ({item.customization.customizationName})
+                                  </span>
+                                )}
                               </h3>
                               <p className="text-sm text-gray-500 mb-1">
                                 SKU: #{item._id}
                               </p>
+                              {item.isCustom && (
+                                <p className="text-sm text-purple-600 mb-1">
+                                  ✨ Custom Design
+                                </p>
+                              )}
                               <p className="text-sm text-gray-500 mb-3">
                                 Quantity: {item.quantity || 1}
                               </p>

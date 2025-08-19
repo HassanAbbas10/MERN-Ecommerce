@@ -152,3 +152,36 @@ export const customerAPI = {
     return response.data;
   },
 };
+
+// Customize API calls
+export const customizeAPI = {
+  getCustomizableShirts: async () => {
+    const response = await axiosInstance.get("/customize/shirts");
+    return response.data;
+  },
+
+  getUserCustomProducts: async (userId) => {
+    const response = await axiosInstance.get(`/customize/user/${userId}`);
+    return response.data;
+  },
+
+  createCustomProduct: async (customData) => {
+    const response = await axiosInstance.post("/customize", customData);
+    return response.data;
+  },
+
+  updateCustomProduct: async (customProductId, customData) => {
+    const response = await axiosInstance.put(`/customize/${customProductId}`, customData);
+    return response.data;
+  },
+
+  deleteCustomProduct: async (customProductId) => {
+    const response = await axiosInstance.delete(`/customize/${customProductId}`);
+    return response.data;
+  },
+
+  getCustomProductById: async (customProductId) => {
+    const response = await axiosInstance.get(`/customize/${customProductId}`);
+    return response.data;
+  },
+};

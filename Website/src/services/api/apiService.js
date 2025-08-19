@@ -81,6 +81,11 @@ export const productAPI = {
     const response = await axiosInstance.delete(`/products/${id}`);
     return response.data;
   },
+
+  makeAllShirtsCustomizable: async () => {
+    const response = await axiosInstance.patch('/products/make-customizable');
+    return response.data;
+  },
 };
 
 // Order API calls
@@ -107,6 +112,39 @@ export const orderAPI = {
 
   deleteOrder: async (id) => {
     const response = await axiosInstance.delete(`/orders/${id}`);
+    return response.data;
+  },
+};
+
+// Customize API calls
+export const customizeAPI = {
+  createCustomProduct: async (customData) => {
+    const response = await axiosInstance.post("/customize", customData);
+    return response.data;
+  },
+
+  getUserCustomProducts: async (userId) => {
+    const response = await axiosInstance.get(`/customize/user/${userId}`);
+    return response.data;
+  },
+
+  getCustomProductById: async (customProductId) => {
+    const response = await axiosInstance.get(`/customize/${customProductId}`);
+    return response.data;
+  },
+
+  updateCustomProduct: async (customProductId, updateData) => {
+    const response = await axiosInstance.put(`/customize/${customProductId}`, updateData);
+    return response.data;
+  },
+
+  deleteCustomProduct: async (customProductId) => {
+    const response = await axiosInstance.delete(`/customize/${customProductId}`);
+    return response.data;
+  },
+
+  getCustomizableShirts: async () => {
+    const response = await axiosInstance.get("/customize/shirts");
     return response.data;
   },
 };

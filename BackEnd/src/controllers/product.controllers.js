@@ -53,6 +53,30 @@ export const deleteProductById = async (req, res) => {
   }
 };
 
+// Bulk update shirts to be customizable
+export const makeAllShirtsCustomizable = async (req, res) => {
+  try {
+    // Update all shirts to be customizable
+    const result = await Product.updateMany(
+      { category: 'shirts' },
+      { $set: { isCustomizable: true } }
+    );
+
+    // Get updated shirts
+    const customizableShirts = await Product.find({ 
+      category: 'shirts', 
+      isCustomizable: true 
+    }).select('name price category isCustomizable');
+
+    res.status(200).json(new ApiResponse(200, {
+      modifiedCount: result.modifiedCount,
+      customizableShirts
+    }, `Updated ${result.modifiedCount} shirts to be customizable`));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const addProducts = async (req, res) => {
   try {
 
@@ -85,6 +109,7 @@ export const addProducts = async (req, res) => {
       price,
       quantity,
       category,
+      isCustomizable,
     } = req.body;
 
     const product = await Product.create({
@@ -95,6 +120,7 @@ export const addProducts = async (req, res) => {
       price,
       quantity,
       category,
+      isCustomizable: isCustomizable === 'true' || isCustomizable === true,
     });
 
     res.status(201).json(new ApiResponse(201, product, "Product created successfully"));

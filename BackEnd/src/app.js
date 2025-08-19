@@ -19,12 +19,14 @@ import productRouter from "./routes/product.routes.js";
 import orderRouter from "./routes/order.route.js";
 import adminOrderRouter from "./routes/adminOrder.routes.js";
 import dashboardRouter from "./routes/dashboard.routes.js";
+import customizeRouter from "./routes/customize.routes.js";
 
 app.use("/api/v1/products", productRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/orders", orderRouter);
 app.use("/api/v1/orders", adminOrderRouter);
 app.use("/api/v1/dashboard", dashboardRouter);
+app.use("/api/v1/customize", customizeRouter);
 
 // Error handling middleware
 app.use((error, req, res, next) => {

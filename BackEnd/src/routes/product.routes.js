@@ -7,6 +7,7 @@ import {
   getAllProducts,
   getProductById,
   updateProductById,
+  makeAllShirtsCustomizable,
 } from "../controllers/product.controllers.js";
 const router = express.Router();
 
@@ -15,5 +16,6 @@ router.get("/:id", getProductById);
 router.post("/", upload.array('images',5), addProducts);
 router.delete("/:id", deleteProductById);
 router.put("/:id", updateProductById);
+router.patch("/make-customizable", makeAllShirtsCustomizable);
 
 export default router

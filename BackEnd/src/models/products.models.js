@@ -38,6 +38,10 @@ export const productSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
+    isCustomizable: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

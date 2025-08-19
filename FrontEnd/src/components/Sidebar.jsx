@@ -4,13 +4,14 @@ import { useState } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { LayoutDashboard, Package, ShoppingCart, Users, BarChart3, Menu, X, Plus, LogOut } from "lucide-react"
+import { LayoutDashboard, Package, ShoppingCart, Users, BarChart3, Menu, X, Plus, LogOut, Palette } from "lucide-react"
 import { useAuth } from "../context/AuthContext"
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Products", href: "/products", icon: Package },
   { name: "Add Product", href: "/add-product", icon: Plus },
+  { name: "Customization", href: "/customization-management", icon: Palette },
   { name: "Orders", href: "/orders", icon: ShoppingCart },
   { name: "Customers", href: "/customers", icon: Users },
   { name: "Analytics", href: "/analytics", icon: BarChart3 },

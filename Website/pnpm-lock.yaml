@@ -50,6 +50,9 @@ importers:
       embla-carousel-react:
         specifier: ^8.5.1
         version: 8.5.1(react@18.3.1)
+      konva:
+        specifier: ^9.3.22
+        version: 9.3.22
       lottie-web:
         specifier: ^5.12.2
         version: 5.12.2
@@ -65,6 +68,9 @@ importers:
       react-icons:
         specifier: ^5.4.0
         version: 5.4.0(react@18.3.1)
+      react-konva:
+        specifier: ^18.2.12
+        version: 18.2.12(@types/react@18.3.18)(konva@9.3.22)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-lottie:
         specifier: ^1.2.10
         version: 1.2.10(react@18.3.1)
@@ -748,6 +754,11 @@ packages:
     resolution: {integrity: sha512-P4t6saawp+b/dFrUr2cvkVsfvPguwsxtH6dNIYRllMsefqFzkZk5UIjzyDOv5g1dXIPdG4Sp1yCR4Z6RCUsG/Q==}
     peerDependencies:
       '@types/react': ^18.0.0
+
+  '@types/react-reconciler@0.28.9':
+    resolution: {integrity: sha512-HHM3nxyUZ3zAylX8ZEyrDNd2XZOnQ0D5XfunJF5FLQnZbHHYq4UWvW1QfelQNXv1ICNkwYhfxjwfnqivYB6bFg==}
+    peerDependencies:
+      '@types/react': '*'
 
   '@types/react-transition-group@4.4.12':
     resolution: {integrity: sha512-8TV6R3h2j7a91c+1DXdJi3Syo69zzIZbz7Lg5tORM5LEJG7X/E6a1V3drRyBRZq7/utz7A+c4OgYLiLcYGHG6w==}
@@ -1525,6 +1536,11 @@ packages:
     resolution: {integrity: sha512-x4WH0BWmrMmg4oHHl+duwubhrvczGlyuGAZu3nvrf0UXOfPu8IhZObFEr7DE/iv01YgVZrsOiRcqw2srkKEDIA==}
     engines: {node: '>= 0.4'}
 
+  its-fine@1.2.5:
+    resolution: {integrity: sha512-fXtDA0X0t0eBYAGLVM5YsgJGsJ5jEmqZEPrGbzdf5awjv0xE7nqv3TVnvtUF060Tkes15DbDAKW/I48vsb6SyA==}
+    peerDependencies:
+      react: '>=18.0'
+
   jackspeak@3.4.3:
     resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
 
@@ -1569,6 +1585,9 @@ packages:
   kleur@3.0.3:
     resolution: {integrity: sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==}
     engines: {node: '>=6'}
+
+  konva@9.3.22:
+    resolution: {integrity: sha512-yQI5d1bmELlD/fowuyfOp9ff+oamg26WOCkyqUyc+nczD/lhRa3EvD2MZOoc4c1293TAubW9n34fSQLgSeEgSw==}
 
   levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
@@ -1880,10 +1899,23 @@ packages:
   react-is@19.0.0:
     resolution: {integrity: sha512-H91OHcwjZsbq3ClIDHMzBShc1rotbfACdWENsmEf0IFvZ3FgGPtdHMcsv45bQ1hAbgdfiA8SnxTKfDS+x/8m2g==}
 
+  react-konva@18.2.12:
+    resolution: {integrity: sha512-tszrM/emkX1u2reJTn3M9nMG9kuFv09s974dUEXK7luIN3z0VRD8PUjwyaLWi8Ba52ntQceZ0nfYWC6VlPa3vA==}
+    peerDependencies:
+      konva: ^8.0.1 || ^7.2.5 || ^9.0.0
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+
   react-lottie@1.2.10:
     resolution: {integrity: sha512-x0eWX3Z6zSx1XM5QSjnLupc6D22LlMCB0PH06O/N/epR2hsLaj1Vxd9RtMnbbEHjJ/qlsgHJ6bpN3vnZI92hjw==}
     peerDependencies:
       react: '>=15.0.0'
+
+  react-reconciler@0.29.2:
+    resolution: {integrity: sha512-zZQqIiYgDCTP/f1N/mAR10nJGrPD2ZR+jDSEsKWJHYC7Cm2wodlwbR3upZRdC3cjIjSlTLNVyO7Iu0Yy7t2AYg==}
+    engines: {node: '>=0.10.0'}
+    peerDependencies:
+      react: ^18.3.1
 
   react-redux@9.2.0:
     resolution: {integrity: sha512-ROY9fvHhwOD9ySfrF0wmvu//bKCQ6AeZZq1nJNtbDC+kk5DuSuNX/n6YWYF/SYy7bSba4D4FSz8DJeKY/S/r+g==}
@@ -2836,6 +2868,10 @@ snapshots:
     dependencies:
       '@types/react': 18.3.18
 
+  '@types/react-reconciler@0.28.9(@types/react@18.3.18)':
+    dependencies:
+      '@types/react': 18.3.18
+
   '@types/react-transition-group@4.4.12(@types/react@18.3.18)':
     dependencies:
       '@types/react': 18.3.18
@@ -3777,6 +3813,13 @@ snapshots:
       reflect.getprototypeof: 1.0.9
       set-function-name: 2.0.2
 
+  its-fine@1.2.5(@types/react@18.3.18)(react@18.3.1):
+    dependencies:
+      '@types/react-reconciler': 0.28.9(@types/react@18.3.18)
+      react: 18.3.1
+    transitivePeerDependencies:
+      - '@types/react'
+
   jackspeak@3.4.3:
     dependencies:
       '@isaacs/cliui': 8.0.2
@@ -3819,6 +3862,8 @@ snapshots:
       json-buffer: 3.0.1
 
   kleur@3.0.3: {}
+
+  konva@9.3.22: {}
 
   levn@0.4.1:
     dependencies:
@@ -4101,12 +4146,30 @@ snapshots:
 
   react-is@19.0.0: {}
 
+  react-konva@18.2.12(@types/react@18.3.18)(konva@9.3.22)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      '@types/react-reconciler': 0.28.9(@types/react@18.3.18)
+      its-fine: 1.2.5(@types/react@18.3.18)(react@18.3.1)
+      konva: 9.3.22
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-reconciler: 0.29.2(react@18.3.1)
+      scheduler: 0.23.2
+    transitivePeerDependencies:
+      - '@types/react'
+
   react-lottie@1.2.10(react@18.3.1):
     dependencies:
       babel-runtime: 6.26.0
       lottie-web: 5.12.2
       prop-types: 15.8.1
       react: 18.3.1
+
+  react-reconciler@0.29.2(react@18.3.1):
+    dependencies:
+      loose-envify: 1.4.0
+      react: 18.3.1
+      scheduler: 0.23.2
 
   react-redux@9.2.0(@types/react@18.3.18)(react@18.3.1)(redux@5.0.1):
     dependencies:

@@ -7,6 +7,7 @@ import UpdateProduct from "./Pages/UpdateProduct"
 import Orders from "./Pages/Orders"
 import Customers from "./Pages/Customers"
 import Analytics from "./Pages/Analytics"
+import CustomizationManagement from "./Pages/CustomizationManagement"
 import Login from "./Pages/Login"
 import Signup from "./Pages/Signup"
 import { AuthProvider, useAuth } from "./context/AuthContext"
@@ -41,6 +42,7 @@ const AdminLayout = () => {
           <Route path="/orders" element={<Orders />} />
           <Route path="/customers" element={<Customers />} />
           <Route path="/analytics" element={<Analytics />} />
+          <Route path="/customization-management" element={<CustomizationManagement />} />
           <Route path="/" element={<Navigate to="/dashboard" />} />
         </Routes>
       </main>

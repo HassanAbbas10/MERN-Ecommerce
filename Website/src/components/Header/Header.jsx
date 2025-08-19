@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useAuth } from "../../context/AuthContext";
 import { ShoppingBag, User, LogOut, Menu, X } from "lucide-react";
-import Search from "../Search/Search";
+
 import HeaderSec from "./HeaderSec";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -42,10 +42,7 @@ const Header = () => {
           </div>
 
           {/* Desktop Search */}
-          <div className="hidden lg:flex flex-1 max-w-lg mx-8">
-            <Search />
-          </div>
-
+    
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-8">
             <Link 
@@ -60,6 +57,13 @@ const Header = () => {
               className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 relative group"
             >
               Shop
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+            </Link>
+            <Link 
+              to="/customization" 
+              className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 relative group"
+            >
+              Customize
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
             </Link>
             <Link 
@@ -101,12 +105,7 @@ const Header = () => {
                   </span>
                 </div>
                 {/* Temporary debug button */}
-                <button 
-                  onClick={debugUserData}
-                  className="text-xs bg-red-500 text-white px-2 py-1 rounded"
-                >
-                  Debug
-                </button>
+             
                 <Button
                   onClick={handleLogout}
                   variant="ghost"
@@ -148,9 +147,7 @@ const Header = () => {
         </div>
 
         {/* Mobile Search */}
-        <div className="lg:hidden py-3 border-t border-gray-100">
-          <Search />
-        </div>
+      
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
@@ -168,6 +165,13 @@ const Header = () => {
               onClick={toggleMobileMenu}
             >
               Shop
+            </Link>
+            <Link 
+              to="/customization" 
+              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md font-medium"
+              onClick={toggleMobileMenu}
+            >
+              Customize
             </Link>
             <Link 
               to="/contact" 

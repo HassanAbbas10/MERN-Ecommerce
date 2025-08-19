@@ -16,6 +16,8 @@ const Login = lazy(() => import("./Pages/Login"));
 const Signup = lazy(() => import("./Pages/Signup"));
 const Orders = lazy(() => import("./Pages/Orders"));
 const Products = lazy(() => import("./Pages/Products"));
+const Customization = lazy(() => import("./Pages/Customization"));
+const SimpleCanvasTest = lazy(() => import("./Pages/SimpleCanvasTest"));
 
 const Layout = () => {
   return (
@@ -74,6 +76,22 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoadingSpinner message="Loading your cart..." />}>
             <Cart />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/customization",
+        element: (
+          <Suspense fallback={<PageLoadingSpinner message="Loading customization..." />}>
+            <Customization />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/canvas-test",
+        element: (
+          <Suspense fallback={<PageLoadingSpinner message="Loading canvas test..." />}>
+            <SimpleCanvasTest />
           </Suspense>
         ),
       },
