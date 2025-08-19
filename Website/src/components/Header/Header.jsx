@@ -100,6 +100,13 @@ const Header = () => {
                     {user?.fullName?.split(' ')[0] || 'User'}
                   </span>
                 </div>
+                {/* Temporary debug button */}
+                <button 
+                  onClick={debugUserData}
+                  className="text-xs bg-red-500 text-white px-2 py-1 rounded"
+                >
+                  Debug
+                </button>
                 <Button
                   onClick={handleLogout}
                   variant="ghost"
@@ -184,7 +191,7 @@ const Header = () => {
                 <div className="space-y-3">
                   <div className="flex items-center px-3 py-2">
                     <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-3">
-                      <User className="w-4 h-4 text-gray-600" />
+                      <img className="" src={user?.avatar} />
                     </div>
                     <span className="text-sm font-medium text-gray-700">
                       {user?.fullName || 'User'}

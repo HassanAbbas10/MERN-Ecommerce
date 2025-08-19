@@ -12,6 +12,8 @@ const authReducer = (state, action) => {
         error: null,
       };
     case "LOGIN_SUCCESS":
+      console.log("LOGIN_SUCCESS payload:", action.payload); // Debug log
+      console.log("LOGIN_SUCCESS user:", action.payload.user); // Debug log
       return {
         ...state,
         isLoading: false,
@@ -38,10 +40,11 @@ const authReducer = (state, action) => {
         error: null,
       };
     case "SET_USER":
+      console.log("SET_USER payload:", action.payload); // Debug log
       return {
         ...state,
         user: action.payload,
-        isAuthenticated: true,
+        isAuthenticated: !!action.payload,
       };
     default:
       return state;

@@ -2,9 +2,8 @@ import { useState, useEffect, lazy, Suspense } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { remFromCart, clearCart } from "@/Redux/cartSlice";
-import { orderAPI } from "../services/api/apiService";
+import { orderAPI, authAPI } from "../services/api/apiService";
 import { useAuth } from "../context/AuthContext";
-import { ComponentLoadingSpinner } from "@/components/Loading/LoadingSpinner";
 
 // Lazy load animation component
 const LottieAnimation = lazy(() => import("@/components/Lotte/LotteAnimation"));
@@ -12,7 +11,7 @@ const LottieAnimation = lazy(() => import("@/components/Lotte/LotteAnimation"));
 const Cart = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [amount, setTotalAmount] = useState(0);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
@@ -29,7 +28,9 @@ const Cart = () => {
 
   useEffect(() => {
     if (Array.isArray(cart)) {
-      setTotalAmount(cart.reduce((acc, curr) => acc + (curr.price * (curr.quantity || 1)), 0));
+      setTotalAmount(
+        cart.reduce((acc, curr) => acc + curr.price * (curr.quantity || 1), 0)
+      );
     }
   }, [cart]);
 
@@ -47,9 +48,9 @@ const Cart = () => {
 
   const handleShippingInfoChange = (e) => {
     const { name, value } = e.target;
-    setShippingInfo(prev => ({
+    setShippingInfo((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -57,8 +58,83 @@ const Cart = () => {
     e.preventDefault();
     setIsCheckingOut(true);
 
+    // Check if user is authenticated
+    if (!isAuthenticated || !user) {
+      alert("Please log in to place an order");
+      navigate("/login");
+      setIsCheckingOut(false);
+      return;
+    }
+
+    // Check if cart is not empty
+    if (!cart || cart.length === 0) {
+      alert("Your cart is empty");
+      setIsCheckingOut(false);
+      return;
+    }
+
     try {
+      console.log("=== DEBUGGING USER DATA ===");
+      console.log("isAuthenticated:", isAuthenticated);
+      console.log("user:", user);
+      console.log("user type:", typeof user);
+      console.log("user keys:", Object.keys(user || {}));
+      console.log("user._id:", user?._id);
+      console.log("user.id:", user?.id);
+      console.log("localStorage accessToken:", localStorage.getItem('accessToken'));
+      console.log("================================");
+      
+      let userId = null;
+      
+      // Try multiple ways to get userId
+      if (user) {
+        userId = user._id || user.id || user.userId;
+        console.log("Extracted userId from user object:", userId);
+      }
+      
+      // Fallback: try to get user info from API if direct user object doesn't work
+      if (!userId) {
+        console.log("No userId found in user object, trying API...");
+        try {
+          const userData = await authAPI.getCurrentUser();
+          console.log("API response:", userData);
+          if (userData && userData.data) {
+            userId = userData.data._id || userData.data.id || userData.data.userId;
+            console.log("Retrieved userId from API:", userId);
+          }
+        } catch (apiError) {
+          console.error("Failed to fetch current user:", apiError);
+        }
+      }
+      
+      // Last resort: try to extract from token payload (decode JWT manually)
+      if (!userId) {
+        console.log("Still no userId, trying to extract from token...");
+        const token = localStorage.getItem('accessToken');
+        if (token) {
+          try {
+            // Decode JWT payload (simple base64 decode - not for verification, just data extraction)
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            console.log("Token payload:", payload);
+            userId = payload._id || payload.id || payload.userId || payload.sub;
+            console.log("Extracted userId from token:", userId);
+          } catch (tokenError) {
+            console.error("Failed to decode token:", tokenError);
+          }
+        }
+      }
+      
+      console.log("Final resolved userId:", userId);
+      
+      if (!userId) {
+        alert("User ID not found. Please log out and log in again.");
+        console.error("Critical: No userId found anywhere!");
+        setIsCheckingOut(false);
+        return;
+      }
+      
       const orderData = {
+        userId: userId, // Add userId to the order data
         items: cart.map(item => ({
           product: item._id, // Use _id instead of id for MongoDB
           quantity: item.quantity || 1,
@@ -80,9 +156,12 @@ const Cart = () => {
       };
 
       console.log("Sending order data:", orderData);
+      console.log("Order data userId:", orderData.userId);
+      console.log("Order data type check:", typeof orderData.userId);
+      
       const response = await orderAPI.createOrder(orderData);
       console.log("Order response:", response);
-      
+
       if (response.success) {
         dispatch(clearCart());
         alert("Order created successfully!");
@@ -91,7 +170,11 @@ const Cart = () => {
     } catch (error) {
       console.error("Order creation failed:", error);
       console.error("Error response:", error.response?.data);
-      alert(`Failed to create order: ${error.response?.data?.message || error.message}`);
+      alert(
+        `Failed to create order: ${
+          error.response?.data?.message || error.message
+        }`
+      );
     } finally {
       setIsCheckingOut(false);
     }
@@ -104,7 +187,9 @@ const Cart = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
           <div className="px-6 py-4 border-b border-gray-200">
             <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
-            <p className="text-gray-600 mt-1">{cart.length} {cart.length === 1 ? 'item' : 'items'} in your cart</p>
+            <p className="text-gray-600 mt-1">
+              {cart.length} {cart.length === 1 ? "item" : "items"} in your cart
+            </p>
           </div>
         </div>
 
@@ -121,21 +206,32 @@ const Cart = () => {
                         <div key={`${item._id}-${index}`} className="p-6">
                           <div className="flex items-start space-x-4">
                             <div className="flex-shrink-0">
-                              <img 
-                                src={item.images[0]} 
-                                alt={item.name} 
+                              <img
+                                src={item.images[0]}
+                                alt={item.name}
                                 className="w-24 h-24 rounded-lg object-cover border border-gray-200"
                               />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h3 className="text-lg font-semibold text-gray-900 mb-2">{item.name}</h3>
-                              <p className="text-sm text-gray-500 mb-1">SKU: #{item._id}</p>
-                              <p className="text-sm text-gray-500 mb-3">Quantity: {item.quantity || 1}</p>
+                              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                                {item.name}
+                              </h3>
+                              <p className="text-sm text-gray-500 mb-1">
+                                SKU: #{item._id}
+                              </p>
+                              <p className="text-sm text-gray-500 mb-3">
+                                Quantity: {item.quantity || 1}
+                              </p>
                               <div className="flex items-center justify-between">
                                 <div>
-                                  <span className="text-sm text-gray-500">Unit Price: Rs {item.price.toLocaleString()}</span>
+                                  <span className="text-sm text-gray-500">
+                                    Unit Price: Rs {item.price.toLocaleString()}
+                                  </span>
                                   <span className="text-2xl font-bold text-blue-600 ml-4">
-                                    Rs {(item.price * (item.quantity || 1)).toLocaleString()}
+                                    Rs{" "}
+                                    {(
+                                      item.price * (item.quantity || 1)
+                                    ).toLocaleString()}
                                   </span>
                                 </div>
                                 <button
@@ -157,11 +253,16 @@ const Cart = () => {
                 <div className="lg:col-span-1">
                   <div className="bg-white rounded-lg shadow-sm border border-gray-200 sticky top-8">
                     <div className="px-6 py-4 border-b border-gray-200">
-                      <h2 className="text-xl font-semibold text-gray-900">Order Summary</h2>
+                      <h2 className="text-xl font-semibold text-gray-900">
+                        Order Summary
+                      </h2>
                     </div>
                     <div className="px-6 py-4 space-y-4">
                       <div className="flex justify-between text-base text-gray-600">
-                        <p>Subtotal ({cart.length} {cart.length === 1 ? 'item' : 'items'})</p>
+                        <p>
+                          Subtotal ({cart.length}{" "}
+                          {cart.length === 1 ? "item" : "items"})
+                        </p>
                         <p>Rs {amount.toLocaleString()}</p>
                       </div>
                       <div className="flex justify-between text-base text-gray-600">
@@ -178,7 +279,7 @@ const Cart = () => {
                           <p>Rs {amount.toLocaleString()}</p>
                         </div>
                       </div>
-                      <button 
+                      <button
                         onClick={handleProceedToCheckout}
                         className="w-full bg-blue-600 border border-transparent rounded-md py-3 px-4 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
                       >
@@ -196,22 +297,29 @@ const Cart = () => {
               <div className="max-w-2xl mx-auto">
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200">
                   <div className="px-6 py-4 border-b border-gray-200">
-                    <h2 className="text-2xl font-semibold text-gray-900">Checkout</h2>
-                    <button 
+                    <h2 className="text-2xl font-semibold text-gray-900">
+                      Checkout
+                    </h2>
+                    <button
                       onClick={() => setShowCheckoutForm(false)}
                       className="text-blue-600 hover:text-blue-800 text-sm mt-2"
                     >
                       ← Back to Cart
                     </button>
                   </div>
-                  
+
                   <form onSubmit={handleCreateOrder} className="px-6 py-6">
                     <div className="space-y-6">
                       <div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Shipping Information</h3>
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">
+                          Shipping Information
+                        </h3>
                         <div className="grid grid-cols-1 gap-4">
                           <div>
-                            <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
+                            <label
+                              htmlFor="fullName"
+                              className="block text-sm font-medium text-gray-700 mb-1"
+                            >
                               Full Name
                             </label>
                             <input
@@ -225,7 +333,10 @@ const Cart = () => {
                             />
                           </div>
                           <div>
-                            <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
+                            <label
+                              htmlFor="address"
+                              className="block text-sm font-medium text-gray-700 mb-1"
+                            >
                               Address
                             </label>
                             <textarea
@@ -240,7 +351,10 @@ const Cart = () => {
                           </div>
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
+                              <label
+                                htmlFor="city"
+                                className="block text-sm font-medium text-gray-700 mb-1"
+                              >
                                 City
                               </label>
                               <input
@@ -254,7 +368,10 @@ const Cart = () => {
                               />
                             </div>
                             <div>
-                              <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">
+                              <label
+                                htmlFor="state"
+                                className="block text-sm font-medium text-gray-700 mb-1"
+                              >
                                 State
                               </label>
                               <input
@@ -270,7 +387,10 @@ const Cart = () => {
                           </div>
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <label htmlFor="zipCode" className="block text-sm font-medium text-gray-700 mb-1">
+                              <label
+                                htmlFor="zipCode"
+                                className="block text-sm font-medium text-gray-700 mb-1"
+                              >
                                 ZIP Code
                               </label>
                               <input
@@ -284,7 +404,10 @@ const Cart = () => {
                               />
                             </div>
                             <div>
-                              <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
+                              <label
+                                htmlFor="country"
+                                className="block text-sm font-medium text-gray-700 mb-1"
+                              >
                                 Country
                               </label>
                               <input
@@ -300,7 +423,10 @@ const Cart = () => {
                             </div>
                           </div>
                           <div>
-                            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                            <label
+                              htmlFor="phone"
+                              className="block text-sm font-medium text-gray-700 mb-1"
+                            >
                               Phone Number
                             </label>
                             <input
@@ -317,12 +443,24 @@ const Cart = () => {
                       </div>
 
                       <div className="border-t pt-6">
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Order Summary</h3>
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">
+                          Order Summary
+                        </h3>
                         <div className="space-y-2">
                           {cart.map((item, index) => (
-                            <div key={`checkout-${item._id}-${index}`} className="flex justify-between text-sm">
-                              <span>{item.name} (x{item.quantity || 1})</span>
-                              <span>Rs {(item.price * (item.quantity || 1)).toLocaleString()}</span>
+                            <div
+                              key={`checkout-${item._id}-${index}`}
+                              className="flex justify-between text-sm"
+                            >
+                              <span>
+                                {item.name} (x{item.quantity || 1})
+                              </span>
+                              <span>
+                                Rs{" "}
+                                {(
+                                  item.price * (item.quantity || 1)
+                                ).toLocaleString()}
+                              </span>
                             </div>
                           ))}
                           <div className="border-t pt-2 mt-2">
@@ -340,7 +478,9 @@ const Cart = () => {
                           disabled={isCheckingOut}
                           className="w-full bg-green-600 border border-transparent rounded-md py-3 px-4 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          {isCheckingOut ? "Creating Order..." : "Place Order (Cash on Delivery)"}
+                          {isCheckingOut
+                            ? "Creating Order..."
+                            : "Place Order (Cash on Delivery)"}
                         </button>
                       </div>
                     </div>
@@ -352,10 +492,16 @@ const Cart = () => {
         ) : (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200">
             <div className="flex flex-col justify-center items-center py-16">
-              <LottieAnimation />
+              <Suspense fallback={<div className="w-32 h-32 bg-gray-200 rounded-lg animate-pulse"></div>}>
+                <LottieAnimation />
+              </Suspense>
               <div className="text-center mt-6">
-                <h3 className="text-2xl font-semibold text-gray-900 mb-2">Your cart is empty</h3>
-                <p className="text-gray-600 mb-6">Looks like you haven&apos;t added any items to your cart yet.</p>
+                <h3 className="text-2xl font-semibold text-gray-900 mb-2">
+                  Your cart is empty
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  Looks like you haven&apos;t added any items to your cart yet.
+                </p>
                 <button className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
                   Start Shopping
                 </button>

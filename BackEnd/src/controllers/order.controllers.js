@@ -8,6 +8,7 @@ export const createOrder = async (req, res) => {
 
   try {
     const {
+      userId,  // Add userId extraction
       items,
       shippingAddress,
       paymentMethod,
@@ -18,8 +19,24 @@ export const createOrder = async (req, res) => {
     } = req.body;
 
     console.log("Received order data:", req.body);
+    console.log("UserId from request:", userId);
     console.log("Items:", items);
     console.log("Shipping address:", shippingAddress);
+
+    // Validate required fields
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID is required"
+      });
+    }
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Order items are required"
+      });
+    }
 
     let subtotal = 0;
     const processedItems = [];
@@ -61,6 +78,7 @@ export const createOrder = async (req, res) => {
 
     // Create order
     const order = new Order({
+      userId,  // Add userId to the order
       orderNumber,
       items: processedItems,
       subTotal: subtotal, // Use subTotal (camelCase) to match the model
